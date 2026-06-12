@@ -1,6 +1,13 @@
 """Integration tests — API endpoints qua TestClient."""
 
 
+def test_homepage_returns_html(client):
+    resp = client.get("/")
+    assert resp.status_code == 200
+    assert "text/html" in resp.headers["content-type"]
+    assert "my-production-agent" in resp.text
+
+
 def test_health_returns_200(client):
     resp = client.get("/health")
     assert resp.status_code == 200
