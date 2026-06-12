@@ -8,6 +8,41 @@ def test_homepage_returns_html(client):
     assert "legal-multiagent" in resp.text
 
 
+def test_agents_unavailable_returns_503(client, monkeypatch):
+    import httpx
+
+    import app.main as main_mod
+
+    def handler(request):
+        raise httpx.ConnectError("registry down")
+
+    transport = httpx.MockTransport(handler)
+    orig = httpx.AsyncClient
+    monkeypatch.setattr(main_mod.httpx, "AsyncClient",
+                        lambda **kw: orig(transport=transport))
+    resp = client.get("/agents")
+    assert resp.status_code == 503
+    assert resp.json()["agents"] == []
+
+
+def test_agents_proxies_registry(client, monkeypatch):
+    import httpx
+
+    import app.main as main_mod
+
+    def handler(request):
+        assert request.url.path == "/agents"
+        return httpx.Response(200, json={"agents": [{"agent_name": "law-agent"}]})
+
+    transport = httpx.MockTransport(handler)
+    orig = httpx.AsyncClient
+    monkeypatch.setattr(main_mod.httpx, "AsyncClient",
+                        lambda **kw: orig(transport=transport))
+    resp = client.get("/agents")
+    assert resp.status_code == 200
+    assert resp.json()["agents"][0]["agent_name"] == "law-agent"
+
+
 def test_health_returns_200(client):
     resp = client.get("/health")
     assert resp.status_code == 200
