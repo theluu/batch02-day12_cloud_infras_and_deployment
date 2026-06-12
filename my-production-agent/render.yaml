@@ -1,0 +1,26 @@
+# Render Blueprint — deploy bằng cách connect repo trên dashboard
+services:
+  - type: web
+    name: my-production-agent
+    runtime: docker
+    region: singapore
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: AGENT_API_KEY
+        generateValue: true
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: agent-cache
+          property: connectionString
+
+  - type: redis
+    name: agent-cache
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
