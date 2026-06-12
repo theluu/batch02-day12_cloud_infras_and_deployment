@@ -321,7 +321,8 @@ def health():
         "uptime_seconds": round(time.time() - START_TIME, 1),
         "version": settings.app_version,
         "environment": settings.environment,
-        "message": "Hello from my-production-agent! Visit /ready to check Redis connectivity and readiness.",
+        "message": "Hello from my-production-agent! "
+                   "Visit /ready to check Redis connectivity and readiness.",
     }
 
 
