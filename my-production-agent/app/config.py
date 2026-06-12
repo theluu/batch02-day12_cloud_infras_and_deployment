@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     # App
     app_name: str = "My Production Agent"
-    app_version: str = "1.0.0"
+    app_version: str = "1.1.0"
 
     # State / Redis
     redis_url: str = "redis://localhost:6379/0"
