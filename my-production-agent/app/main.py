@@ -124,7 +124,7 @@ def append_history(session_id: str, role: str, content: str) -> None:
 @app.get("/")
 def root():
     return {"app": settings.app_name, "version": settings.app_version,
-            "docs": "/docs", "health": "/health", "message": "Deployed by CI/CD pipeline 🚀"}
+            "docs": "/docs", "health": "/health"}
 
 
 @app.post("/ask")
