@@ -3,6 +3,8 @@
 > **Sản phẩm Day 9** (Multi-Agent với A2A protocol) **+ hạ tầng Day 12** (cloud deployment).
 > Live demo: **https://my-production-agent-production.up.railway.app**
 
+![Mission control UI](docs/mission-control.png)
+
 ## Tóm tắt cho giảng viên
 
 Folder này là bài làm kết hợp 2 buổi học:
