@@ -1,28 +1,59 @@
 """
-LLM client — mặc định mock (không cần API key thật).
-Set OPENAI_API_KEY để thay bằng client thật.
+Backend client — chuyển câu hỏi tới Legal Multi-Agent System qua A2A protocol.
+
+Gateway (app.main) không gọi LLM trực tiếp nữa; nó forward tới Customer Agent
+(entry point của mạng multi-agent: Customer → Law → Tax + Compliance song song).
 """
-import hashlib
+import os
+from uuid import uuid4
 
-from .config import settings
+import httpx
 
-_CANNED = [
-    "Đây là câu trả lời từ AI agent. Trong production, đây sẽ là response từ LLM thật.",
-    "Agent đang hoạt động tốt! Hệ thống đã được containerize và deploy lên cloud.",
-    "Câu hỏi hay! Stateless design giúp hệ thống scale ngang dễ dàng.",
-    "Docker + Redis + Nginx = một stack production-ready cho AI agent.",
-]
+CUSTOMER_AGENT_URL = os.getenv("CUSTOMER_AGENT_URL", "http://localhost:10100")
+AGENT_TIMEOUT_SECONDS = float(os.getenv("AGENT_TIMEOUT_SECONDS", "300"))
 
 
-def ask_llm(question: str, history: list[dict]) -> str:
-    if settings.openai_api_key:
-        # Chỗ này gắn OpenAI/Anthropic client thật khi có key
-        pass
-    idx = int(hashlib.md5(question.encode()).hexdigest(), 16) % len(_CANNED)
-    answer = _CANNED[idx]
-    if history:
-        answer += f" (context: {len(history)} messages trước đó)"
-    return answer
+def _build_a2a_payload(question: str) -> dict:
+    """JSON-RPC message/send theo A2A protocol."""
+    return {
+        "jsonrpc": "2.0",
+        "id": str(uuid4()),
+        "method": "message/send",
+        "params": {
+            "message": {
+                "role": "user",
+                "parts": [{"kind": "text", "text": question}],
+                "messageId": str(uuid4()),
+            }
+        },
+    }
+
+
+def _extract_text(result: dict) -> str:
+    """Gom text từ artifacts (Task) hoặc parts (Message) trong response A2A."""
+    chunks: list[str] = []
+    for artifact in result.get("artifacts") or []:
+        for part in artifact.get("parts") or []:
+            if part.get("text"):
+                chunks.append(part["text"])
+    for part in result.get("parts") or []:
+        if part.get("text"):
+            chunks.append(part["text"])
+    return "\n".join(chunks)
+
+
+async def ask_llm(question: str, history: list[dict]) -> str:
+    """Gửi câu hỏi tới Customer Agent, trả về phân tích pháp lý tổng hợp."""
+    async with httpx.AsyncClient(timeout=AGENT_TIMEOUT_SECONDS) as client:
+        resp = await client.post(CUSTOMER_AGENT_URL, json=_build_a2a_payload(question))
+        resp.raise_for_status()
+        data = resp.json()
+
+    if "error" in data:
+        raise RuntimeError(f"A2A error: {data['error']}")
+
+    text = _extract_text(data.get("result") or {})
+    return text or "(agent network returned no text)"
 
 
 def estimate_tokens(text: str) -> int:

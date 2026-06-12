@@ -127,7 +127,7 @@ HOME_HTML = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>my-production-agent — control room</title>
+<title>legal multi-agent — control room</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=IBM+Plex+Mono:wght@400;600&display=swap"
       rel="stylesheet">
@@ -197,8 +197,8 @@ footer b{color:var(--warn)}
     <h1>my-production-agent<span class="cursor"></span></h1>
     <span class="badge"><span id="dot" class="dot"></span><span id="st">checking…</span></span>
   </header>
-  <p class="sub">AI agent · <b>Docker</b> → <b>GitHub Actions</b> → <b>Railway</b> ·
-     auth / rate-limit / cost-guard / stateless-redis</p>
+  <p class="sub">Legal Multi-Agent System (A2A) · <b>Customer</b> → <b>Law</b> →
+     <b>Tax</b> + <b>Compliance</b> song song · auth / rate-limit / cost-guard / redis</p>
 
   <div class="grid">
     <div class="cell"><div class="k">status</div><div id="v-st" class="v">—</div></div>
@@ -211,8 +211,9 @@ footer b{color:var(--warn)}
     <h2>thử agent ngay tại đây</h2>
     <label for="key">x-api-key</label>
     <input id="key" placeholder="dán API key của bạn" autocomplete="off">
-    <label for="q">question</label>
-    <input id="q" value="Xin chào agent!" autocomplete="off">
+    <label for="q">question (mạng agent chạy 30–60s — kiên nhẫn nhé)</label>
+    <input id="q" value="If a company breaks a contract, what are the consequences?"
+           autocomplete="off">
     <button id="go">POST /ask ▸</button>
     <pre id="out">// response sẽ hiện ở đây</pre>
   </section>
@@ -262,7 +263,7 @@ def root():
 
 
 @app.post("/ask")
-def ask(
+async def ask(
     body: AskRequest,
     user_id: str = Depends(verify_api_key),
     _rate: None = Depends(check_rate_limit),
@@ -271,7 +272,11 @@ def ask(
     session_id = body.session_id or str(uuid.uuid4())
     history = load_history(session_id)
 
-    answer = ask_llm(body.question, history)
+    try:
+        answer = await ask_llm(body.question, history)
+    except Exception as exc:
+        logger.error(json.dumps({"event": "agent_backend_error", "error": str(exc)}))
+        raise HTTPException(502, "Agent network unavailable — try again shortly") from exc
 
     append_history(session_id, "user", body.question)
     append_history(session_id, "assistant", answer)

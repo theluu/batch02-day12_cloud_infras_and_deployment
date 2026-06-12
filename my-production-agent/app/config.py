@@ -29,12 +29,12 @@ class Settings(BaseSettings):
     rate_limit_per_minute: int = 10
     monthly_budget_usd: float = 10.0
 
-    # LLM (để trống → dùng mock)
-    openai_api_key: str = ""
-    llm_model: str = "mock-llm"
+    # Backend = Legal Multi-Agent System (A2A) — gateway forward tới Customer Agent
+    llm_model: str = "legal-multiagent"
 
     class Config:
         env_file = ".env"
+        extra = "ignore"  # .env chứa cả config của agent network (OPENROUTER_*)
 
     def api_key_map(self) -> dict[str, str]:
         """Map api_key → user_id."""

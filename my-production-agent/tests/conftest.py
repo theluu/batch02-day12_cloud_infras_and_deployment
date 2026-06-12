@@ -30,6 +30,11 @@ def fake_redis(monkeypatch):
 
 
 @pytest.fixture()
-def client(fake_redis):
+def client(fake_redis, monkeypatch):
+    # Backend thật là mạng multi-agent (A2A) — mock trong unit tests
+    async def fake_ask_llm(question: str, history: list[dict]) -> str:
+        return f"[legal-multiagent] analysis of: {question}"
+
+    monkeypatch.setattr(main_mod, "ask_llm", fake_ask_llm)
     with TestClient(main_mod.app) as c:
         yield c
