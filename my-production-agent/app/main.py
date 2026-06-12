@@ -194,7 +194,7 @@ footer b{color:var(--warn)}
 <div class="crt"></div>
 <main>
   <header>
-    <h1>my-production-agent<span class="cursor"></span></h1>
+    <h1>legal-multiagent<span class="cursor"></span></h1>
     <span class="badge"><span id="dot" class="dot"></span><span id="st">checking…</span></span>
   </header>
   <p class="sub">Legal Multi-Agent System (A2A) · <b>Customer</b> → <b>Law</b> →

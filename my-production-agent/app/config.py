@@ -13,8 +13,8 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     # App
-    app_name: str = "My Production Agent"
-    app_version: str = "1.2.0"
+    app_name: str = "Legal Multi-Agent System"
+    app_version: str = "2.0.0"
 
     # State / Redis
     redis_url: str = "redis://localhost:6379/0"
