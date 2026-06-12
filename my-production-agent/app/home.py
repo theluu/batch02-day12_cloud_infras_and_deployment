@@ -153,8 +153,6 @@ footer b{color:var(--warn)}
 
   <section>
     <h2>hỏi mạng agent — qua customer agent</h2>
-    <label for="key">x-api-key</label>
-    <input id="key" placeholder="dán API key của bạn" autocomplete="off">
     <label for="q">question (delegation chạy 30–60s — kiên nhẫn nhé)</label>
     <input id="q" autocomplete="off"
            value="If a company breaks a contract and avoids taxes, what happens?">
@@ -214,12 +212,14 @@ async function network(){
 }
 health(); network();
 setInterval(health, 5000); setInterval(network, 5000);
+const DEMO_KEY = '__DEMO_KEY__';
 go.onclick = async () => {
   go.disabled = true; out.className = '';
   out.textContent = '// đang gửi vào mạng agent… (customer → law → specialists)';
   try{
-    const r = await fetch('/ask', {method:'POST',
-      headers:{'Content-Type':'application/json','X-API-Key':key.value},
+    const headers = {'Content-Type':'application/json'};
+    if(DEMO_KEY) headers['X-API-Key'] = DEMO_KEY;
+    const r = await fetch('/ask', {method:'POST', headers,
       body: JSON.stringify({question: q.value})});
     const d = await r.json();
     out.className = r.ok ? '' : 'err';

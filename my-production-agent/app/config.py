@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     rate_limit_per_minute: int = 10
     monthly_budget_usd: float = 10.0
 
+    # Key nhúng vào trang chủ để demo console (vẫn qua auth + rate limit + budget)
+    demo_api_key: str = ""
+
     # Backend = Legal Multi-Agent System (A2A) — gateway forward tới Customer Agent
     llm_model: str = "legal-multiagent"
 

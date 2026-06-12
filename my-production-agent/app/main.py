@@ -126,7 +126,7 @@ def append_history(session_id: str, role: str, content: str) -> None:
 
 @app.get("/", response_class=HTMLResponse)
 def root():
-    return HOME_HTML
+    return HOME_HTML.replace("__DEMO_KEY__", settings.demo_api_key)
 
 
 @app.post("/ask")
