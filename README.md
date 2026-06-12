@@ -6,6 +6,27 @@
 
 ---
 
+## 📌 BÀI NỘP — dành cho giảng viên
+
+> **Toàn bộ bài làm nằm trong folder [`my-production-agent/`](my-production-agent/)**
+>
+> Sản phẩm là **Legal Multi-Agent System của Day 9** (A2A protocol + LangGraph:
+> Customer → Law → Tax + Compliance agents, Registry service discovery)
+> được đóng gói và vận hành bằng toàn bộ kiến thức Day 12:
+> Docker multi-stage, API key auth, rate limiting, cost guard, health/ready,
+> graceful shutdown, stateless Redis, structured logging.
+>
+> | Hạng mục | Link / Lệnh |
+> |---|---|
+> | 🌐 **Live demo** (Railway) | https://my-production-agent-production.up.railway.app |
+> | 📖 Chi tiết bài làm | [`my-production-agent/README.md`](my-production-agent/README.md) |
+> | 📝 Đáp án Part 1→5 | [`Solution.md`](Solution.md) |
+> | ⚙️ CI/CD (bonus) | [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml) — lint + tests (coverage 94%) → auto-deploy Railway |
+> | ✅ Validation | `cd my-production-agent && python check_production_ready.py` → 20/20 |
+> | 🐳 Chạy local | `cd my-production-agent && docker compose up -d --build` → http://localhost:8088 |
+
+---
+
 ## Cấu Trúc Project
 
 ```
