@@ -322,7 +322,7 @@ def health():
         "version": settings.app_version,
         "environment": settings.environment,
         "message": "Hello from my-production-agent! "
-                   "Visit /ready to check Redis connectivity and readiness.",
+                   "Visit /ready to check Redis connectivity and readiness!",
     }
 
 
